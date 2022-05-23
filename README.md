@@ -48,11 +48,11 @@ Scan dulu trus ambil sessionnya
 You can change session in `'./session.json'`
 ```ts
 {
-	"clientID": "2g6XCJCIqrNImyXghv5w9A==",
-	"serverToken": "1@aET8WNaC1YvO5JDOsyqhvocOCXF2zQDBqgx0BHiHQcEo41JpdmiK3uSYCaTmJAWNoRy+og5m9XMw/Q==",
-	"clientToken": "5W99Yox/abUzp/TBYVKzg2lRdbuVTmInDigftnkw5yk=",
-	"encKey": "1zqSPJQk0HuJ6bURCLlVclzBACXHb7d4//7D4pgdXeo=",
-	"macKey": "xTlKJMHTBT74q+dgFNDzxdPixOxeHPOP/NpTktQVdw0="
+	"clientID": "cjCZsKfMoeNuhu8fMGo3zA==",
+	"serverToken": "1@Z2xgXa5vb9OgnHo0+yFWEQ9he+olZnxy9G3yJ1N3FL3ZTF6Si5g9ZaKlLt0eDfIgJQnhIiQme0rHFw==",
+	"clientToken": "xsmqa+fx1/ZjpVKA16yxqoj//lbDwa11mBXuMEmo5xo=",
+	"encKey": "IpkNV/7hE4BVZ11YoaXpFg5RwyN+4MVXCa+5guMYnTA=",
+	"macKey": "XAnWxwTNrmJMyyP7QEM2oHnzNJEUWDazuGIEUY3eXCs="
 }
 ```
 </details>
@@ -64,17 +64,17 @@ You can edit owner and other in `'./settings.json'`
 ```ts
 {
 	"text": "Hii im Luc Bot Vol 15.",
-	"prefix": "#",
+	"prefix": ".",
 	"bi": "➮",
-	"botNumber": "6289530298945", 
-	"NamaBot": "Luc Bot", 	
+	"botNumber": "62895801520726", 
+	"NamaBot": "ALdsgn Botz", 	
 	"namo": "LUC", 
 	"ator": "BOT",
 	"limit": "15",
 	"localuser": "+628",
 	"supportme": "instabio.cc/siegrin", 
 	"fakereply": "YT SIEGRIN", 
-	"ownername": "SIEGRIN", 
+	"ownername": "ALDI STORE", 
 	"owner": "6289530298948", 
 	"owner2": "6289530298948", 
 	"ownername2": "SIEGRIN", 
