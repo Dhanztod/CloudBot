@@ -1,4 +1,5 @@
 import daily from './rpg-daily.js'
+import weekly from './rpg-weekly.js'
 import monthly from './rpg-monthly.js'
 import adventure from './rpg-adventure.js'
 
@@ -18,6 +19,14 @@ const inventory = {
     diamond: true,
     gold: true,
     iron: true,
+    upgrader: true,
+    pet: true,
+  },
+  durabi: {
+    sworddurability: true,
+    pickaxedurability: true,
+    fishingroddurability: true,
+    armordurability: true,
   },
   tools: {
     armor: {
@@ -70,7 +79,6 @@ const inventory = {
     uncommon: true,
     mythic: true,
     legendary: true,
-    pet: true,
   },
   pets: {
     horse: 10,
@@ -83,6 +91,10 @@ const inventory = {
       name: 'claim',
       time: daily.cooldown
     },
+    lastweekly: {
+    	name: 'weekly',
+        time: weekly.cooldown
+        },
     lastmonthly: {
       name: 'monthly',
       time: monthly.cooldown
@@ -95,51 +107,47 @@ const inventory = {
 }
 let handler = async (m, { conn }) => {
   let user = global.db.data.users[m.sender]
-  const tools = Object.keys(inventory.tools).map(v => user[v] && `*${global.rpg.emoticon(v)}:* ${typeof inventory.tools[v] === 'object' ? inventory.tools[v][user[v]?.toString()] : `Level(s) ${user[v]}`}`).filter(v => v).join('\n').trim()
-  const items = Object.keys(inventory.items).map(v => user[v] && `*${global.rpg.emoticon(v)}:* ${user[v]}`).filter(v => v).join('\n').trim()
-  const crates = Object.keys(inventory.crates).map(v => user[v] && `*${global.rpg.emoticon(v)}:* ${user[v]}`).filter(v => v).join('\n').trim()
-  const pets = Object.keys(inventory.pets).map(v => user[v] && `*${global.rpg.emoticon(v)}:* ${user[v] >= inventory.pets[v] ? 'Max Levels' : `Level(s) ${user[v]}`}`).filter(v => v).join('\n').trim()
-  const cooldowns = Object.entries(inventory.cooldowns).map(([cd, { name, time }]) => cd in user && `*${name}*: ${new Date() - user[cd] >= time ? 'Active' : 'Reload'}`).filter(v => v).join('\n').trim()
+  const tools = Object.keys(inventory.tools).map(v => user[v] && `*${global.rpg.emoticon(v)}${v}:* ${typeof inventory.tools[v] === 'object' ? inventory.tools[v][user[v]?.toString()] : `Level(s) ${user[v]}`}`).filter(v => v).join('\n').trim()
+  const items = Object.keys(inventory.items).map(v => user[v] && `*${global.rpg.emoticon(v)}${v}:* ${user[v]}`).filter(v => v).join('\n').trim()
+  const dura = Object.keys(inventory.durabi).map(v => user[v] && `*${global.rpg.emoticon(v)}${v}:* ${user[v]}`).filter(v => v).join('\n').trim()
+  const crates = Object.keys(inventory.crates).map(v => user[v] && `*${global.rpg.emoticon(v)}${v}:* ${user[v]}`).filter(v => v).join('\n').trim()
+  const pets = Object.keys(inventory.pets).map(v => user[v] && `*${global.rpg.emoticon(v)}${v}:* ${user[v] >= inventory.pets[v] ? 'Max Levels' : `Level(s) ${user[v]}`}`).filter(v => v).join('\n').trim()
+  const cooldowns = Object.entries(inventory.cooldowns).map(([cd, { name, time }]) => cd in user && `*✧ ${name}*: ${new Date() - user[cd] >= time ? '✅' : '❌'}`).filter(v => v).join('\n').trim()
   const caption = `
 Inventory *${conn.getName(m.sender)}*
 
-${Object.keys(inventory.others).map(v => user[v] && `*${global.rpg.emoticon(v)}:* ${user[v]}`).filter(v => v).join('\n')}${tools ? `
+${Object.keys(inventory.others).map(v => user[v] && `*${global.rpg.emoticon(v)}${v}:* ${user[v]}`).filter(v => v).join('\n')}${tools ? `
 
 
-
-
-*📍 Tools*
+*─────📍 Tools ─────*
 ${tools}` : ''}${items ? `
 
+${dura}` : ''}${items ? `
 
 
-
-*📍 Items*
+*─────📍 Items ─────*
 ${items}
-*🎒 Total Items:* ${Object.keys(inventory.items).map(v => user[v]).reduce((a, b) => a + b, 0)} Items` : ''}${crates ? `
+*📮 Total Items:* ${Object.keys(inventory.items).map(v => user[v]).reduce((a, b) => a + b, 0)} Items` : ''}${crates ? `
 
 
-
-
-*📍 Crates*
+*─────📍 Crates ─────*
 ${crates}
-*🎒 Total Crates:* ${Object.keys(inventory.crates).map(v => user[v]).reduce((a, b) => a + b, 0)} Crates` : ''}${pets ? `
+*📮 Total Crates:* ${Object.keys(inventory.crates).map(v => user[v]).reduce((a, b) => a + b, 0)} Crates` : ''}${pets || user.petFood ? `
 
 
+*─────📍 Pets ─────*
+${pets}${user.petFood ? '\n*🍖petFood:* ' + user.petFood : ''}` : ''}${cooldowns ? `
 
-
-*📍 Pets*
-${pets}` : ''}${cooldowns ? `
-
-
-
-
-*⌚ Cooldowns*
+*───── ⏰ Cooldowns ─────*
 ${cooldowns}` : ''}
+*✧ dungeon: ${user.lastdungeon == 0 ? '✅': '❌'}*
+*✧ mining: ${user.lastmining == 0 ? '✅': '❌'}*
 `.trim()
-  m.reply(caption)
+  conn.sendButton(m.chat, caption, global.wm, null, [`${user.health < 40 ? 'Heal': 'Adventure'}`,`${user.health < 40 ? '.heal': '.adventure'}`],m)
 }
 handler.help = ['inventory', 'inv']
 handler.tags = ['rpg']
 handler.command = /^(inv(entory)?|bal(ance)?|money|e?xp)$/i
+
+handler.register = true
 export default handler

@@ -1,13 +1,25 @@
 const items = {
     buy: {
         limit: {
-            money: 1
+            exp: 999
         },
         potion: {
-            money: 250,
+            money: 1250,
         },
         trash: {
-            money: 21,
+            money: 4,
+        },
+        wood: {
+            money: 700
+        },
+        rock: {
+            money: 850
+        },
+        string: {
+            money: 400
+        },
+        iron: { 
+        	money: 3000
         }
     },
     sell: {
@@ -15,7 +27,28 @@ const items = {
             money: 125,
         },
         trash: {
-            money: 20
+            money: 2
+        },
+        wood: {
+            money: 600
+        },
+        rock: {
+            money: 750
+        },
+        string: {
+            money: 300
+        },
+        iron: {
+            money: 2500
+        },
+        gold: {
+            money: 4700
+        },
+        diamond: {
+            money: 9000
+        },
+        emerald: {
+            money: 15000
         }
     }
 }
@@ -30,7 +63,7 @@ Usage example: *${usedPrefix}${command} potion 10*
 📍Items list: 
 ${Object.keys(listItems).map((v) => {
         let paymentMethod = Object.keys(listItems[v]).find(v => v in user)
-        return `${global.rpg.emoticon(v)} | ${listItems[v][paymentMethod]} ${global.rpg.emoticon(paymentMethod)}`.trim()
+        return `${global.rpg.emoticon(v)}${v} | ${listItems[v][paymentMethod]} ${global.rpg.emoticon(paymentMethod)}${paymentMethod}`.trim()
     }).join('\n')}
 `.trim()
     const item = (args[0] || '').toLowerCase()
@@ -38,15 +71,15 @@ ${Object.keys(listItems).map((v) => {
     if (!listItems[item]) return m.reply(info)
     if (command.toLowerCase() == 'buy') {
         let paymentMethod = Object.keys(listItems[item]).find(v => v in user)
-        if (user[paymentMethod] < listItems[item][paymentMethod] * total) return m.reply(`You don't have enough ${global.rpg.emoticon(paymentMethod)} to buy *${total}* ${global.rpg.emoticon(item)}. You need *${(listItems[item][paymentMethod] * total) - user[paymentMethod]}* more ${paymentMethod} to be able to buy`)
+        if (user[paymentMethod] < listItems[item][paymentMethod] * total) return m.reply(`You don't have enough ${global.rpg.emoticon(paymentMethod)}${paymentMethod} to buy *${total}* ${global.rpg.emoticon(item)}${item}. You need *${(listItems[item][paymentMethod] * total) - user[paymentMethod]}* more ${paymentMethod} to be able to buy`)
         user[paymentMethod] -= listItems[item][paymentMethod] * total
         user[item] += total
-        return m.reply(`You bought *${total}* ${global.rpg.emoticon(item)}`)
+        return m.reply(`You bought *${total}* ${global.rpg.emoticon(item)}${item}`)
     } else {
-        if (user[item] < total) return m.reply(`You don't have enough *${global.rpg.emoticon(item)}* to sell, you only have ${user[item]} items`)
+        if (user[item] < total) return m.reply(`You don't have enough *${global.rpg.emoticon(item)}${item}* to sell, you only have ${user[item]} items`)
         user[item] -= total
         user.money += listItems[item].money * total
-        return m.reply(`You sold *${total}* ${global.rpg.emoticon(item)}`)
+        return m.reply(`You sold *${total}* ${global.rpg.emoticon(item)}${item}`)
     }
 }
 

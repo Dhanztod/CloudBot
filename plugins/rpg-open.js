@@ -65,20 +65,20 @@ let handler = async (m, { command, args, usedPrefix }) => {
     let user = global.db.data.users[m.sender]
     let listCrate = Object.fromEntries(Object.entries(rewards).filter(([v]) => v && v in user))
     let info = `
-𝐔𝐬𝐞 𝐅𝐨𝐫𝐦𝐚𝐭 *${usedPrefix}${command} [crate] [count]*
-𝐂𝐨𝐧𝐭𝐨𝐡 : *${usedPrefix}${command} common 10*
+Use Format *${usedPrefix}${command} [crate] [count]*
+Usage example: *${usedPrefix}${command} common 10*
 
 📍Crate list: 
 ${Object.keys(listCrate).map((v) => `
-${rpg.emoticon(v)}
+${rpg.emoticon(v)}${v}
 `.trim()).join('\n')}
 `.trim()
     let type = (args[0] || '').toLowerCase()
     let count = Math.floor(isNumber(args[1]) ? Math.min(Math.max(parseInt(args[1]), 1), Number.MAX_SAFE_INTEGER) : 1) * 1
     if (!(type in listCrate)) return m.reply(info)
     if (user[type] < count) return m.reply(`
-𝐊𝐚𝐦𝐮 *${rpg.emoticon(type)} 𝐜𝐫𝐚𝐭𝐞* 𝐭𝐢𝐝𝐚𝐤 𝐜𝐮𝐤𝐮𝐩!, 𝐤𝐚𝐦𝐮 𝐡𝐚𝐧𝐲𝐚 𝐩𝐮𝐧𝐲𝐚 ${user[type]} *${rpg.emoticon(type)} 𝐜𝐫𝐚𝐭𝐞*
-𝐓𝐢𝐩𝐞 *${usedPrefix}buy ${type} ${count - user[type]}* to buy
+Your *${rpg.emoticon(type)}${type} crate* is not enough!, you only have ${user[type]} *${rpg.emoticon(type)}${type} crate*
+type *${usedPrefix}buy ${type} ${count - user[type]}* to buy
 `.trim())
     // TODO: add pet crate
     // if (type !== 'pet')
@@ -94,17 +94,17 @@ ${rpg.emoticon(v)}
             }
     user[type] -= count * 1
     m.reply(`
-𝐀𝐧𝐝𝐚 𝐭𝐞𝐥𝐚𝐡 𝐦𝐞𝐦𝐛𝐮𝐤𝐚 *${count}* ${global.rpg.emoticon(type)} 𝐜𝐫𝐚𝐭𝐞 𝐝𝐚𝐧 𝐦𝐞𝐧𝐝𝐚𝐩𝐚𝐭𝐤𝐚𝐧:
+You have opened *${count}* ${global.rpg.emoticon(type)}${type} crate and got:
 ${Object.keys(crateReward).filter(v => v && crateReward[v] && !/legendary|pet|mythic|diamond|emerald/i.test(v)).map(reward => `
-*${global.rpg.emoticon(reward)}:* ${crateReward[reward]}
+*${global.rpg.emoticon(reward)}${reward}:* ${crateReward[reward]}
 `.trim()).join('\n')}
 `.trim())
     let diamond = crateReward.diamond, mythic = crateReward.mythic, pet = crateReward.pet, legendary = crateReward.legendary, emerald = crateReward.emerald
     if (mythic || diamond) m.reply(`
-𝐒𝐞𝐥𝐚𝐦𝐚𝐭 𝐤𝐚𝐦𝐮 𝐦𝐞𝐧𝐝𝐚𝐩𝐚𝐭𝐤𝐚𝐧 𝐢𝐭𝐞𝐦 𝐥𝐚𝐧𝐠𝐤𝐚, 𝐲𝐚𝐢𝐭𝐮 ${diamond ? `*${diamond}* ${rpg.emoticon('diamond')}` : ''}${diamond && mythic ? 'and ' : ''}${mythic ? `*${mythic}* ${rpg.emoticon('mythic')}` : ''}
+Congrats you got a rare item, which is ${diamond ? `*${diamond}* ${rpg.emoticon('diamond')}diamond` : ''}${diamond && mythic ? 'and ' : ''}${mythic ? `*${mythic}* ${rpg.emoticon('mythic')}mythic` : ''}
 `.trim())
     if (pet || legendary || emerald) m.reply(`
-𝐒𝐞𝐥𝐚𝐦𝐚𝐭 𝐤𝐚𝐦𝐮 𝐦𝐞𝐧𝐝𝐚𝐩𝐚𝐭𝐤𝐚𝐧 𝐢𝐭𝐞𝐦 𝐥𝐚𝐧𝐠𝐤𝐚, 𝐲𝐚𝐢𝐭𝐮 ${pet ? `*${pet}* ${rpg.emoticon('pet')}` : ''}${pet && legendary && emerald ? ', ' : (pet && legendary || legendary && emerald || emerald && pet) ? 'and ' : ''}${legendary ? `*${legendary}* ${rpg.emoticon('legendary')}` : ''}${pet && legendary && emerald ? 'and ' : ''}${emerald ? `*${emerald}* ${rpg.emoticon('emerald')}` : ''}
+Congrats you got a epic item, which is ${pet ? `*${pet}* ${rpg.emoticon('pet')}pet` : ''}${pet && legendary && emerald ? ', ' : (pet && legendary || legendary && emerald || emerald && pet) ? 'and ' : ''}${legendary ? `*${legendary}* ${rpg.emoticon('legendary')}legendary` : ''}${pet && legendary && emerald ? 'and ' : ''}${emerald ? `*${emerald}* ${rpg.emoticon('emerald')}emerald` : ''}
 `.trim())
 }
 handler.help = ['open', 'gacha'].map(v => v + ' [crate] [count]')

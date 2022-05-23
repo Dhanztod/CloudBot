@@ -1,4 +1,4 @@
-let limit = 80
+let limit = 99
 import fetch from 'node-fetch'
 import { youtubedl, youtubedlv2, youtubedlv3 } from '@bochilteam/scraper';
 let handler = async (m, { conn, args, isPrems, isOwner }) => {
@@ -32,7 +32,7 @@ let handler = async (m, { conn, args, isPrems, isOwner }) => {
 *📌Title:* ${title}
 *🗎 Filesize:* ${audio.fileSizeH}
 `.trim(), m, null, {
-    asDocument: chat.useDocument
+    asDocument: true
   })
 }
 handler.help = ['mp3', 'a'].map(v => 'yt' + v + ` <url> <without message>`)
@@ -42,4 +42,3 @@ handler.command = /^yt(a|mp3)$/i
 handler.exp = 0
 
 export default handler
-

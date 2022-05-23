@@ -15,7 +15,7 @@ let handler = async (m) => {
         user[reward] += rewards[reward]
         text += `*+${rewards[reward]}* ${rpg.emoticon(reward)}${reward}\n`
     }
-    m.reply(text)
+    conn.sendButton(m.chat,'*––––––『 MONTHLY 』––––––*', text.trim(), null, [['Inventory', '.inv'], ['Menu', '.menu']],m)
     user.lastmonthly = new Date * 1
 }
 handler.help = ['monthly']
@@ -25,4 +25,3 @@ handler.command = /^(monthly)$/i
 handler.cooldown = cooldown
 
 export default handler
-

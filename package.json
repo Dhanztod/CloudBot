@@ -11,8 +11,8 @@
     },
     "scripts": {
         "start": "node index.js",
-        "test": "node test.js",
-        "test2": "nodemon index.js"
+        "cli": "node . --optimize_for_size --max_old_space_size=460 index.js",
+        "db": "node . --autocleartmp --restrict --db 'mongodb+srv://Della:lylia9090@cloudclus1.dlgwh.mongodb.net/cloudclus1?retryWrites=true&w=majority'"
     },
     "keywords": [
         "termux-whatsapp-bot",
@@ -47,13 +47,15 @@
         "chalk": "^5.0.0",
         "cheerio": "^1.0.0-rc.10",
         "colors": "1.4.0",
-        "deepai": "1.0.21",
+        "deepai": "^1.0.21",
+        "dotenv": "^16.0.0",
         "express": "^4.17.3",
         "file-type": "^17.1.1",
         "fluent-ffmpeg": "^2.1.2",
         "formdata-node": "^4.3.2",
         "human-readable": "^0.2.1",
         "jsdom": "^19.0.0",
+        "link-preview-js": "^2.1.13",
         "lodash": "^4.17.21",
         "lowdb": "^3.0.0",
         "mongoose": "github:Automattic/mongoose",

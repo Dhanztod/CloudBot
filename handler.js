@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url'
 import path, { join } from 'path'
 import { unwatchFile, watchFile } from 'fs'
 import chalk from 'chalk'
+import fs from 'fs'
 
 /**
  * @type {import('@adiwajshing/baileys')}
@@ -74,6 +75,12 @@ export async function handler(chatUpdate) {
 
                 if (!isNumber(user.money))
                     user.money = 0
+                if (!isNumber(user.atm))
+                    user.atm = 0
+                if (!isNumber(user.fullatm))
+                    user.fullatm = 0
+                if (!isNumber(user.bank))
+                    user.bank = 0
                 if (!isNumber(user.health))
                     user.health = 100
                 if (!isNumber(user.limit))
@@ -99,6 +106,8 @@ export async function handler(chatUpdate) {
                     user.gold = 0
                 if (!isNumber(user.iron))
                     user.iron = 0
+                if (!isNumber(user.upgrader))
+                    user.upgrader = 0
 
                 if (!isNumber(user.common))
                     user.common = 0
@@ -108,6 +117,8 @@ export async function handler(chatUpdate) {
                     user.mythic = 0
                 if (!isNumber(user.legendary))
                     user.legendary = 0
+                if (!isNumber(user.superior))
+                    user.superior = 0
                 if (!isNumber(user.pet))
                     user.pet = 0
 
@@ -127,6 +138,10 @@ export async function handler(chatUpdate) {
                     user.dog = 0
                 if (!isNumber(user.dogexp))
                     user.dogexp = 0
+                if (!isNumber(user.robo))
+                    user.robo = 0
+                if (!isNumber(user.roboxp))
+                    user.roboxp = 0
 
                 if (!isNumber(user.horselastfeed))
                     user.horselastfeed = 0
@@ -172,6 +187,15 @@ export async function handler(chatUpdate) {
                     user.lastweekly = 0
                 if (!isNumber(user.lastmonthly))
                     user.lastmonthly = 0
+                if (!isNumber(user.lastbunga))
+                    user.lastbunga = 0
+                    
+                if (!isNumber(user.premium))
+                    user.premium = false
+                if (!isNumber(user.premiumTime))
+                    user.premiumTime = 0
+                if (!isNumber(user.limitjoin))
+                    user.limitjoin = 0
             } else
                 global.db.data.users[m.sender] = {
                     exp: 0,
@@ -190,6 +214,9 @@ export async function handler(chatUpdate) {
                     autolevelup: true,
 
                     money: 0,
+                    bank: 0,
+                    atm: 0,
+                    fullatm: 0,
                     health: 100,
                     limit: 100,
                     potion: 10,
@@ -202,11 +229,13 @@ export async function handler(chatUpdate) {
                     diamond: 0,
                     gold: 0,
                     iron: 0,
+                    upgrader: 0,
 
                     common: 0,
                     uncommon: 0,
                     mythic: 0,
                     legendary: 0,
+                    superior: 0,
                     pet: 0,
 
                     horse: 0,
@@ -241,6 +270,11 @@ export async function handler(chatUpdate) {
                     lasthunt: 0,
                     lastweekly: 0,
                     lastmonthly: 0,
+                    lastbunga: 0,
+                    
+                    premium: false,
+                    premiumTime: 0,
+                    limitjoin: 0,
                 }
             let chat = global.db.data.chats[m.chat]
             if (typeof chat !== 'object')
@@ -268,10 +302,10 @@ export async function handler(chatUpdate) {
                     chat.viewonce = false
                 if (!('antiToxic' in chat))
                     chat.antiToxic = false
-                if (!isNumber(chat.expired))
-                    chat.expired = 0
                 if (!('simi' in chat))
                     chat.simi = false
+                if (!isNumber(chat.expired))
+                    chat.expired = 0
             } else
                 global.db.data.chats[m.chat] = {
                     isBanned: false,
@@ -285,19 +319,23 @@ export async function handler(chatUpdate) {
                     antiLink: false,
                     viewonce: false,
                     antiToxic: true,
+                    simi: false,
                     expired: 0,
-                    simi: false
                 }
             let settings = global.db.data.settings[this.user.jid]
             if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {}
             if (settings) {
                 if (!('self' in settings)) settings.self = false
-                if (!('autoread' in settings)) settings.autoread = false
-                if (!('restrict' in settings)) settings.restrict = false
+                if (!('autoread' in settings)) settings.autoread = true
+                if (!('restrict' in settings)) settings.restrict = true
+                if (!('autorestart' in settings)) settings.autorestart = true
+                if (!('restartDB' in settings)) settings.restartDB = 0
             } else global.db.data.settings[this.user.jid] = {
                 self: false,
-                autoread: false,
-                restrict: false
+                autoread: true,
+                restrict: true,
+                autorestart: true,
+                restartDB: 0
             }
         } catch (e) {
             console.error(e)
@@ -318,7 +356,7 @@ export async function handler(chatUpdate) {
         const isROwner = [conn.decodeJid(global.conn.user.id), ...global.owner.map(([number]) => number)].map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
         const isOwner = isROwner || m.fromMe
         const isMods = isOwner || global.mods.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
-        const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
+        const isPrems = isROwner || db.data.users[m.sender].premiumTime > 0
 
         if (opts['queque'] && m.text && !(isMods || isPrems)) {
             let queque = this.msgqueque, time = 1000 * 5
@@ -437,7 +475,7 @@ export async function handler(chatUpdate) {
                 if (m.chat in global.db.data.chats || m.sender in global.db.data.users) {
                     let chat = global.db.data.chats[m.chat]
                     let user = global.db.data.users[m.sender]
-                    if (name != 'owner-unbanchat.js' && chat?.isBanned)
+                    if (name != 'owner-unbanchat.js' && name != 'owner-exec.js' && name != 'owner-exec2.js' && name != 'tool-delete.js' && chat?.isBanned)
                         return // Except this
                     if (name != 'owner-unbanuser.js' && user?.banned)
                         return
@@ -487,11 +525,11 @@ export async function handler(chatUpdate) {
                 else
                     m.exp += xp
                 if (!isPrems && plugin.limit && global.db.data.users[m.sender].limit < plugin.limit * 1) {
-                    this.reply(m.chat, `Limit anda habis, silahkan beli melalui *${usedPrefix}buy*`, m)
+                    this.reply(m.chat, `[❗] Limit anda habis, silahkan beli melalui *${usedPrefix}buy limit*`, m)
                     continue // Limit habis
                 }
                 if (plugin.level > _user.level) {
-                    this.reply(m.chat, `diperlukan level ${plugin.level} untuk menggunakan perintah ini. Level kamu ${_user.level}`, m)
+                    this.reply(m.chat, `[💬] Diperlukan level ${plugin.level} untuk menggunakan perintah ini\n*Level mu:* ${_user.level} 📊`, m)
                     continue // If the level has not been reached
                 }
                 let extra = {
@@ -533,7 +571,7 @@ export async function handler(chatUpdate) {
                             for (let [jid] of global.owner.filter(([number, _, isDeveloper]) => isDeveloper && number)) {
                                 let data = (await conn.onWhatsApp(jid))[0] || {}
                                 if (data.exists)
-                                    m.reply(`*Plugin:* ${m.plugin}\n*Sender:* ${m.sender}\n*Chat:* ${m.chat}\n*Command:* ${usedPrefix}${command} ${args.join(' ')}\n\n\`\`\`${text}\`\`\``.trim(), data.jid)
+                                    m.reply(`*🗂️ Plugin:* ${m.plugin}\n*👤 Sender:* ${m.sender}\n*💬 Chat:* ${m.chat}\n*💻 Command:* ${usedPrefix}${command} ${args.join(' ')}\n📄 *Error Logs:*\n\n\`\`\`${text}\`\`\``.trim(), data.jid)
                             }
                         m.reply(text)
                     }
@@ -547,7 +585,7 @@ export async function handler(chatUpdate) {
                         }
                     }
                     if (m.limit)
-                        m.reply(+m.limit + ' Limit terpakai')
+                        m.reply(+m.limit + ' Limit terpakai ✔️')
                 }
                 break
             }
@@ -633,8 +671,13 @@ export async function participantsUpdate({ id, participants, action }) {
                     } catch (e) {
                     } finally {
                         text = (action === 'add' ? (chat.sWelcome || this.welcome || conn.welcome || 'Welcome, @user!').replace('@subject', await this.getName(id)).replace('@desc', groupMetadata.desc?.toString() || 'unknow') :
-                            (chat.sBye || this.bye || conn.bye || 'Bye, @user!')).replace('@user', '@' + user.split('@')[0])
-                        this.sendFile(id, pp, 'pp.jpg', text, null, false, { mentions: [user] })
+                            (chat.sBye || this.bye || conn.bye || 'Bye, @user!')).replace('@user', await this.getName(user))
+                        //this.sendFile(id, pp, 'pp.jpg', text, null, false, { mentions: [user] })
+    this.sendHydrated(id, text, author, pp, sgc, (action == 'add' ? '💌 WELCOME' : '🐾 BYE'), user.split`@`[0], '🌹 USER', [
+      ['MENU 🎀', '.menu'],
+      ['\n\nSAYA GAY DAN SAYA BANGGA', '...'],
+      [null, null]
+    ], null, false, { mentions: [user] })
                     }
                 }
             }
@@ -698,18 +741,26 @@ Untuk mematikan fitur ini, ketik
 
 global.dfail = (type, m, conn) => {
     let msg = {
-        rowner: 'Perintah ini hanya dapat digunakan oleh _*OWWNER!1!1!*_',
-        owner: 'Perintah ini hanya dapat digunakan oleh _*Owner Bot*_!',
-        mods: 'Perintah ini hanya dapat digunakan oleh _*Moderator*_ !',
-        premium: 'Perintah ini hanya untuk member _*Premium*_ !',
-        group: 'Perintah ini hanya dapat digunakan di grup!',
-        private: 'Perintah ini hanya dapat digunakan di Chat Pribadi!',
-        admin: 'Perintah ini hanya untuk *Admin* grup!',
-        botAdmin: 'Jadikan bot sebagai *Admin* untuk menggunakan perintah ini!',
-        unreg: 'Silahkan daftar untuk menggunakan fitur ini dengan cara mengetik:\n\n*#daftar nama.umur*\n\nContoh: *#daftar Manusia.16*',
-        restrict: 'Fitur ini di *disable*!'
+        rowner: '[ ❗ ] Hanya Developer',
+        owner: '[ ❗ ] Hanya Owner',
+        mods: '[ ❗ ] Hanya Moderator',
+        premium: '[ ❗ ] Hanya Pengguna Premium',
+        group: '[ ❗ ] Hanya Group Chat',
+        private: '[ ❗ ] Hanya Private Chat',
+        admin: '[ ❗ ] Hanya Admin Group',
+        botAdmin: '[ ❗ ] Hanya Bot Admin',
+        restrict: '[ ❗ ] Fitur ini dinonaktifkan'
     }[type]
-    if (msg) return m.reply(msg)
+    if (msg) return conn.reply(m.chat, msg, m, { contextInfo: { externalAdReply: {title: global.wm, body: '404 Access denied!', sourceUrl: global.sig, thumbnail: fs.readFileSync('./thumbnail.jpg') }}})
+    
+    let msgg = {
+    	unreg: 'Halo kak ! 👋\nAnda belum terdaftar didalam Database BOT 🗂️\n\nKlick Tombol dibawah Untuk Mendaftar Ke Database BOT !'
+}[type]
+if (msgg) return conn.sendHydrated(m.chat, msgg, author, null, global.sgc, '🌎 Join My Group', `${m.sender.split`@`[0]}`, '🌹 U S E R', [
+      ['▣ VERIFY ▣', '/daftar'],
+      [null,null],
+      [null, null]
+    ], m)
 }
 
 let file = global.__filename(import.meta.url, true)
